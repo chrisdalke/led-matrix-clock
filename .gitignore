@@ -1,0 +1,8 @@
+build
+xcode
+.vscode
+.idea
+cmake-build-debug
+.vs/
+doxygen/
+*.db
