@@ -14,14 +14,14 @@ MatrixDriver::MatrixDriver(int _width, int _height) {
     this->height = _height;
 
     RGBMatrix::Options matrix_options;
-    defaults.hardware_mapping = "adafruit-hat";
-    defaults.rows = 128;
-    defaults.columns = 64;
-    defaults.chain_length = 1;
-    defaults.parallel = 1;
-    defaults.show_refresh_rate = true;
+    matrix_options.hardware_mapping = "adafruit-hat";
+    matrix_options.rows = 128;
+    matrix_options.columns = 64;
+    matrix_options.chain_length = 1;
+    matrix_options.parallel = 1;
+    matrix_options.show_refresh_rate = true;
 
-    canvas = RGBMatrix::CreateFromFlags(0, [], &defaults);
+    canvas = RGBMatrix::CreateFromFlags(0, [], &matrix_options);
 }
 
 MatrixDriver::~MatrixDriver() {
