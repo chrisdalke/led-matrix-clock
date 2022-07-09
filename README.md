@@ -30,3 +30,6 @@ sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-d
 ```
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ```
+
+-rpi-rgb-led-matrix
+https://github.com/hzeller/rpi-rgb-led-matrix

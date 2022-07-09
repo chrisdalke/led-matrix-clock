@@ -24,6 +24,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
+# Identify if compiling for RPI or ubuntu
+# From https://stackoverflow.com/questions/11944060/how-to-detect-target-architecture-using-cmake
+EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
+message( STATUS "Architecture: ${ARCHITECTURE}" )
+
 #--------------- SOURCE & HEADER FILES --------------------
 
 set(SOURCES
@@ -31,7 +36,14 @@ set(SOURCES
 )
 
 set(HEADERS_PRIVATE
+        src/matrix_driver.h
 )
+
+if( ${ARCHITECTURE} STREQUAL "x86_64" )
+    set(SOURCES ${SOURCES} "src/matrix_driver_shim.cpp")
+else()
+    set(SOURCES ${SOURCES} "src/matrix_driver_rpi.cpp")
+endif()
 
 #------------------- BUILD TARGETS ------------------------
 
@@ -73,7 +85,7 @@ if(NOT json_POPULATED)
 endif()
 
 if (NOT TARGET raylib)
-    find_package(raylib 2.0 REQUIRED)
+    find_package(raylib REQUIRED)
 endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
