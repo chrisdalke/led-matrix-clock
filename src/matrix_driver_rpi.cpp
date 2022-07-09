@@ -5,6 +5,8 @@
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
 
+Canvas *canvas;
+
 MatrixDriver::MatrixDriver(int _width, int _height) {
     std::cout << "Initializing matrix driver" << std::endl;
 
@@ -19,7 +21,7 @@ MatrixDriver::MatrixDriver(int _width, int _height) {
     defaults.parallel = 1;
     defaults.show_refresh_rate = true;
 
-    Canvas *canvas = RGBMatrix::CreateFromFlags(0, [], &defaults);
+    canvas = RGBMatrix::CreateFromFlags(0, [], &defaults);
 }
 
 MatrixDriver::~MatrixDriver() {
