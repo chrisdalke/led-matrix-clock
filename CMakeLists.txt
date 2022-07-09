@@ -92,6 +92,7 @@ if( ${ARCHITECTURE} STREQUAL "x86_64" )
 else()
     target_include_directories(${PROJECT_NAME} PRIVATE "/home/cdalke/rpi-rgb-led-matrix/include")
     target_link_directories(${PROJECT_NAME} PRIVATE "/home/cdalke/rpi-rgb-led-matrix/lib")
+    target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 endif()
 
 #if (NOT TARGET raylib)

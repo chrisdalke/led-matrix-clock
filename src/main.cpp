@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     int velX = 1;
     int velY = 1;
 
-    MatrixDriver matrixDriver(argc, argv, texWidth, texHeight);
+    MatrixDriver matrixDriver(&argc, &argv, texWidth, texHeight);
 
 
     while (!WindowShouldClose()) {

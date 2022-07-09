@@ -6,7 +6,7 @@ class MatrixDriver {
         int width;
         int height;
     public:
-        MatrixDriver(int argc, char *argv[], int width, int height);
+        MatrixDriver(int* argc, char **argv[], int width, int height);
         ~MatrixDriver();
 
         void start();
