@@ -84,13 +84,20 @@ if(NOT json_POPULATED)
     add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
-if (NOT TARGET raylib)
-    find_package(raylib REQUIRED)
-endif ()
+
+if( ${ARCHITECTURE} STREQUAL "x86_64" )
+else()
+    target_include_directories(${PROJECT_NAME} PRIVATE "/home/cdalke/rpi-rgb-led-matrix/include")
+    target_link_directories(${PROJECT_NAME} PRIVATE "/home/cdalke/rpi-rgb-led-matrix/lib")
+endif()
+
+#if (NOT TARGET raylib)
+#    find_package(raylib REQUIRED)
+#endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+#target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 
 #--------------- PLATFORM-SPECIFIC DEPENDENCIES & FLAGS --------------------
 
