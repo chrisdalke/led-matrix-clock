@@ -1,6 +1,6 @@
 #include "matrix_driver.h"
 
-MatrixDriver::MatrixDriver(int _width, int _height) {
+MatrixDriver::MatrixDriver(int argc, char *argv[], int _width, int _height) {
     std::cout << "Initializing shim matrix driver" << std::endl;
 
     this->width = _width;

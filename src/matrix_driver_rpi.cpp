@@ -7,7 +7,7 @@ using rgb_matrix::Canvas;
 
 Canvas *canvas;
 
-MatrixDriver::MatrixDriver(int _width, int _height) {
+MatrixDriver::MatrixDriver(int argc, char *argv[], int _width, int _height) {
     std::cout << "Initializing matrix driver" << std::endl;
 
     this->width = _width;
@@ -16,12 +16,12 @@ MatrixDriver::MatrixDriver(int _width, int _height) {
     RGBMatrix::Options matrix_options;
     matrix_options.hardware_mapping = "adafruit-hat";
     matrix_options.rows = 128;
-    matrix_options.columns = 64;
+    matrix_options.cols = 64;
     matrix_options.chain_length = 1;
     matrix_options.parallel = 1;
     matrix_options.show_refresh_rate = true;
 
-    canvas = RGBMatrix::CreateFromFlags(0, [], &matrix_options);
+    canvas = RGBMatrix::CreateFromFlags(&argc, &argv, &matrix_options);
 }
 
 MatrixDriver::~MatrixDriver() {
