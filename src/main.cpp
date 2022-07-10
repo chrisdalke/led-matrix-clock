@@ -92,8 +92,9 @@ int main(int argc, char** argv) {
 
         // Draw time and date
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
-        drawOutlinedText(dateBuffer, 2, 22, 2, (Color){0,0,0,255}, (Color){100,100,100,255});
+        drawOutlinedText(dateBuffer, 2, 11, 2, (Color){0,0,0,255}, (Color){100,100,100,255});
 
+        DrawRectangle(0, 24, 64, 32, (Color){0,0,0,100});
         drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
 
         DrawRectangle(58, 22, 5,5, (Color){0,0,0,255});
