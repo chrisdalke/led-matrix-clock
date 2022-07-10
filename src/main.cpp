@@ -48,6 +48,7 @@ int main(int argc, char** argv) {
     MatrixDriver matrixDriver(&argc, &argv, texWidth, texHeight);
     
     char timeBuffer[256];
+    char timeBuffer2[256];
     char dateBuffer[256];
 
     Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){0, 0, 0,255}, (Color){43, 169, 252,255}));
@@ -74,6 +75,7 @@ int main(int argc, char** argv) {
     while (!WindowShouldClose()) {
         std::time_t now = std::time(nullptr);
         std::strftime(timeBuffer, 256, "%I:%M%p", std::localtime(&now));
+        std::strftime(timeBuffer2, 256, "%I:%M", std::localtime(&now));
         std::strftime(dateBuffer, 256, "%b %e", std::localtime(&now));
         // Handle updating clock state!
 
@@ -92,19 +94,24 @@ int main(int argc, char** argv) {
 
         // Draw time and date
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
-        drawOutlinedText(dateBuffer, 2, 11, 2, (Color){0,0,0,255}, (Color){100,100,100,255});
+        drawOutlinedText(dateBuffer, 2, 11, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
 
         DrawRectangle(0, 24, 64, 32, (Color){0,0,0,100});
         drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
-
         DrawRectangle(58, 22, 5,5, (Color){0,0,0,255});
         DrawRectangle(59, 23, 3,3, (Color){255,255,255,255});
         DrawRectangle(60, 24, 1,1, (Color){0,0,0,255});
 
+
+        // make everything rendered before this half as bright
+        DrawRectangle(0, 0, 64, 32, (Color){0,0,0,128});
+        
+        drawOutlinedText(timeBuffer2, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
+        drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
+
         EndTextureMode();
 
         // Draw a debug UI on the software window
-        DrawTextureEx(target.texture, (Vector2){0,0}, 0.0f, 1.0f, WHITE);
         DrawTexturePro(target.texture, (Rectangle){ 0, 0, texWidth, -texHeight }, (Rectangle){ 0, 0, screenWidth, screenHeight }, (Vector2){0,0}, 0.0f, WHITE); 
 
         EndDrawing();
