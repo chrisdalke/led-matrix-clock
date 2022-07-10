@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     InitWindow(screenWidth, screenHeight, "LED Matrix Clock");
     RenderTexture2D target = LoadRenderTexture(texWidth, texHeight);
 
-    SetTargetFPS(10);
+    SetTargetFPS(0);
 
     int x = 0;
     int y = 0;
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
     char timeBuffer[256];
     char dateBuffer[256];
 
-    Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){13, 46, 110,255}, (Color){43, 169, 252,255}));
+    Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){0, 0, 0,255}, (Color){43, 169, 252,255}));
 
     while (!WindowShouldClose()) {
         std::time_t now = std::time(nullptr);
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
         DrawTexture(dayBg, 0, 0, (Color){255,255,255,255});
         ClearBackground((Color){0, 0, 0, 255});
-        DrawRectangle(x, y, 10, 10, (Color){0,0,0,100});
+        DrawRectangle(x, y, 10, 10, (Color){0,0,0,255});
 
         // Draw time and date
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});

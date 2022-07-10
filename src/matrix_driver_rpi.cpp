@@ -22,7 +22,7 @@ MatrixDriver::MatrixDriver(int* argc, char **argv[], int _width, int _height) {
     matrix_options.cols = 64;
     matrix_options.chain_length = 1;
     matrix_options.parallel = 1;
-    matrix_options.brightness = 100;
+    matrix_options.brightness = 50;
     matrix_options.show_refresh_rate = false;
 
     matrix = RGBMatrix::CreateFromFlags(argc, argv, &matrix_options);
@@ -46,12 +46,12 @@ void MatrixDriver::stop() {
 }
 
 void MatrixDriver::writePixel(int x, int y, int r, int g, int b) {
-    std::cout << fmt::format("Writing pixel (x = {}, y = {}): {}, {}, {}", x, y, r, g, b) << std::endl;
+    //std::cout << fmt::format("Writing pixel (x = {}, y = {}): {}, {}, {}", x, y, r, g, b) << std::endl;
     canvas->SetPixel(x,y,r,g,b);
 }
 
 void MatrixDriver::flipBuffer() {
-    std::cout << "Flipping pixel buffer" << std::endl;
+    //std::cout << "Flipping pixel buffer" << std::endl;
     canvas = matrix->SwapOnVSync(canvas);
     canvas->Fill(0,0,0);
 }
