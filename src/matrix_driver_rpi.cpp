@@ -17,12 +17,13 @@ MatrixDriver::MatrixDriver(int* argc, char **argv[], int _width, int _height) {
     this->height = _height;
 
     RGBMatrix::Options matrix_options;
-    matrix_options.hardware_mapping = "adafruit-hat";
+    matrix_options.hardware_mapping = "adafruit-hat-pwm";
     matrix_options.rows = 32;
     matrix_options.cols = 64;
     matrix_options.chain_length = 1;
     matrix_options.parallel = 1;
-    matrix_options.brightness = 50;
+    matrix_options.brightness = 100;
+    matrix_options.pwm_dither_bits = 1;
     matrix_options.show_refresh_rate = false;
 
     matrix = RGBMatrix::CreateFromFlags(argc, argv, &matrix_options);
