@@ -1,6 +1,7 @@
 #include <iostream>
 #include <locale>
 #include <chrono>
+#include <cstdint>
 #include <iomanip>
 #include <ctime>
 #include <fmt/core.h>
@@ -13,6 +14,11 @@ const int texHeight = 32;
 const int screenZoomFactor = 10;
 const int screenWidth = texWidth * screenZoomFactor;
 const int screenHeight = texHeight * screenZoomFactor;
+
+uint64_t timeSinceEpochMillisec() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
 
 void drawOutlinedText(const char* text, int x, int y, int size, Color bg, Color fg) {
     DrawText(text, x-1, y-1, size, bg);
@@ -71,11 +77,8 @@ int main(int argc, char** argv) {
         std::strftime(dateBuffer, 256, "%b %e", std::localtime(&now));
         // Handle updating clock state!
 
-        timeOfDayPercent += 0.000001f;
-        if (timeOfDayPercent > 1.0f) {
-            timeOfDayPercent = 0.0f;
-        }
-
+        timeOfDayPercent = ((timeSinceEpochMillisec() / 100) % 1000) / 1000.0f;
+ 
         BeginDrawing();
 
         // Render to internal buffer of same resolution as physical screen
