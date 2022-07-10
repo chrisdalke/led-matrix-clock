@@ -5,6 +5,7 @@
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
 
+RGBMatrix* matrix;
 Canvas *canvas;
 
 MatrixDriver::MatrixDriver(int* argc, char **argv[], int _width, int _height) {
@@ -15,13 +16,15 @@ MatrixDriver::MatrixDriver(int* argc, char **argv[], int _width, int _height) {
 
     RGBMatrix::Options matrix_options;
     matrix_options.hardware_mapping = "adafruit-hat";
-    matrix_options.rows = 128;
+    matrix_options.rows = 32;
     matrix_options.cols = 64;
     matrix_options.chain_length = 1;
     matrix_options.parallel = 1;
-    matrix_options.show_refresh_rate = true;
+    matrix_options.brightness = 50;
+    matrix_options.show_refresh_rate = false;
 
-    canvas = RGBMatrix::CreateFromFlags(argc, argv, &matrix_options);
+    matrix = RGBMatrix::CreateFromFlags(argc, argv, &matrix_options);
+    canvas = matrix->CreateFrameCanvas();
 }
 
 MatrixDriver::~MatrixDriver() {
@@ -45,4 +48,6 @@ void MatrixDriver::writePixel(int x, int y, int r, int g, int b) {
 
 void MatrixDriver::flipBuffer() {
     std::cout << "Flipping pixel buffer" << std::endl;
+    canvas = matrix->SwapOnVSync(canvas);
+    canvas->Fill(0,0,0);
 }
