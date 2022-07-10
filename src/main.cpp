@@ -44,11 +44,11 @@ int main(int argc, char** argv) {
     char timeBuffer[256];
     char dateBuffer[256];
 
-    Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){43, 169, 252,255}, (Color){22, 77, 186,255}));
+    Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){13, 46, 110,255}, (Color){43, 169, 252,255}));
 
     while (!WindowShouldClose()) {
         std::time_t now = std::time(nullptr);
-        std::strftime(timeBuffer, 256, "%R%p", std::localtime(&now));
+        std::strftime(timeBuffer, 256, "%I:%M%p", std::localtime(&now));
         std::strftime(dateBuffer, 256, "%b %e", std::localtime(&now));
         // Handle updating clock state!
 
