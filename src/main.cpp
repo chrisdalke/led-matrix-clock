@@ -46,6 +46,8 @@ int main(int argc, char** argv) {
 
     Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){13, 46, 110,255}, (Color){43, 169, 252,255}));
 
+    int currentTemperature = 69;
+
     while (!WindowShouldClose()) {
         std::time_t now = std::time(nullptr);
         std::strftime(timeBuffer, 256, "%I:%M%p", std::localtime(&now));
@@ -73,7 +75,13 @@ int main(int argc, char** argv) {
 
         // Draw time and date
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
-        drawOutlinedText(dateBuffer, 2, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
+        drawOutlinedText(dateBuffer, 2, 22, 2, (Color){0,0,0,255}, (Color){100,100,100,255});
+
+        drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
+
+        DrawRectangle(58, 22, 5,5, (Color){0,0,0,255});
+        DrawRectangle(59, 23, 3,3, (Color){255,255,255,255});
+        DrawRectangle(60, 24, 1,1, (Color){0,0,0,255});
 
         EndTextureMode();
 
