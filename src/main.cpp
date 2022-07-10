@@ -45,8 +45,25 @@ int main(int argc, char** argv) {
     char dateBuffer[256];
 
     Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){0, 0, 0,255}, (Color){43, 169, 252,255}));
-
+    Texture2D parallaxBgImg = LoadTexture("resources/bg.png");
     int currentTemperature = 69;
+
+    float timeOfDayPercent = 0.0f;
+
+    /*
+    - ring with sun, moon, sunset, stars, etc as base layer
+    
+     TODO: weather layers:
+     - fog layer
+     - rain particle layer
+     - lightning particle layer
+     - snow particle layer
+     - cloud particle layer
+
+     plot of temperature over the next 24 hours
+     Dot showing current temperature
+     make temp curve darker based on sunset/sunrise
+     */
 
     while (!WindowShouldClose()) {
         std::time_t now = std::time(nullptr);
@@ -54,15 +71,10 @@ int main(int argc, char** argv) {
         std::strftime(dateBuffer, 256, "%b %e", std::localtime(&now));
         // Handle updating clock state!
 
-        x += velX;
-        y += velY;
-        if (x > texWidth || x < 0) {
-            velX = -velX;
+        timeOfDayPercent += 0.000001f;
+        if (timeOfDayPercent > 1.0f) {
+            timeOfDayPercent = 0.0f;
         }
-        if (y > texHeight || y < 0) {
-            velY = -velY;
-        }
-        
 
         BeginDrawing();
 
@@ -71,7 +83,9 @@ int main(int argc, char** argv) {
 
         DrawTexture(dayBg, 0, 0, (Color){255,255,255,255});
         ClearBackground((Color){0, 0, 0, 255});
-        DrawRectangle(x, y, 10, 10, (Color){0,0,0,255});
+
+        // Draw background parallax tex
+        DrawTexturePro(parallaxBgImg, (Rectangle){ 0, 0, 192,192 }, (Rectangle){32, 95, 192, 192}, (Vector2){96,96}, timeOfDayPercent * 360, WHITE); 
 
         // Draw time and date
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
