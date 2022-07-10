@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
         ClearBackground((Color){0, 0, 0, 255});
 
         // Draw background parallax tex
-        DrawTexturePro(parallaxBgImg, (Rectangle){ 0, 0, 192,192 }, (Rectangle){32, 95, 192, 192}, (Vector2){96,96}, timeOfDayPercent * 360, WHITE); 
+        DrawTexturePro(parallaxBgImg, (Rectangle){ 0, 0, 192,192 }, (Rectangle){32, 90, 192, 192}, (Vector2){96,96}, timeOfDayPercent * 360, WHITE); 
 
         // Draw time and date
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
