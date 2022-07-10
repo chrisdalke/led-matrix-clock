@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
         for (int xx = 0; xx < texWidth; xx++) {
             for (int yy = 0; yy < texHeight; yy++) {
                 Color pix = GetImageColor(canvasImage, xx, yy);
-                matrixDriver.writePixel(xx, texHeight - yy, pix.r, pix.g, pix.b);
+                matrixDriver.writePixel(xx, texHeight - yy - 1, pix.r, pix.g, pix.b);
             }
         }
         matrixDriver.flipBuffer();
