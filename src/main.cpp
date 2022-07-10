@@ -88,12 +88,13 @@ int main(int argc, char** argv) {
         ClearBackground((Color){0, 0, 0, 255});
 
         // Draw background parallax tex
-        DrawTexturePro(parallaxBgImg, (Rectangle){ 0, 0, 192,192 }, (Rectangle){32, 95, 192, 192}, (Vector2){96,96}, timeOfDayPercent * 360, WHITE); 
+        DrawTexturePro(parallaxBgImg, (Rectangle){ 0, 0, 192,192 }, (Rectangle){32, 90, 192, 192}, (Vector2){96,96}, timeOfDayPercent * 360, WHITE); 
 
         // Draw time and date
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
-        drawOutlinedText(dateBuffer, 2, 22, 2, (Color){0,0,0,255}, (Color){100,100,100,255});
+        drawOutlinedText(dateBuffer, 2, 11, 2, (Color){0,0,0,255}, (Color){100,100,100,255});
 
+        DrawRectangle(0, 24, 64, 32, (Color){0,0,0,100});
         drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
 
         DrawRectangle(58, 22, 5,5, (Color){0,0,0,255});
