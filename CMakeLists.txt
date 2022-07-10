@@ -93,6 +93,8 @@ else()
     target_include_directories(${PROJECT_NAME} PRIVATE "/home/cdalke/rpi-rgb-led-matrix/include")
     target_link_directories(${PROJECT_NAME} PRIVATE "/home/cdalke/rpi-rgb-led-matrix/lib")
     target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+    target_link_libraries(${PROJECT_NAME} PRIVATE rgbmatrix)
+    target_link_libraries(${PROJECT_NAME} PRIVATE GLESv2 EGL pthread m gdm drm)
 endif()
 
 #if (NOT TARGET raylib)
