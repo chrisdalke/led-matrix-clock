@@ -34,6 +34,18 @@ void drawOutlinedText(const char* text, int x, int y, int size, Color bg, Color 
     DrawText(text, x, y, size, fg);
 }
 
+typedef enum WeatherType
+{
+    full_sun = 1,
+    partial_sun = 2,
+    cloudy_sun = 3,
+    cloudy_rain = 4,
+    cloudy_thunder = 5,
+    full_moon = 6,
+    partial_moon = 7,
+    cloudy_moon = 8
+} WeatherType;
+
 int main(int argc, char** argv) {
     InitWindow(screenWidth, screenHeight, "LED Matrix Clock");
     RenderTexture2D target = LoadRenderTexture(texWidth, texHeight);
@@ -51,9 +63,10 @@ int main(int argc, char** argv) {
     char timeBuffer2[256];
     char dateBuffer[256];
 
-    Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){0, 0, 0,255}, (Color){43, 169, 252,255}));
-    Texture2D parallaxBgImg = LoadTexture("resources/bg.png");
+    // Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){0, 0, 0,255}, (Color){43, 169, 252,255}));
+    // Texture2D parallaxBgImg = LoadTexture("resources/bg.png");
     int currentTemperature = 69;
+    WeatherType weatherEnum = WeatherType::full_sun;
 
     float timeOfDayPercent = 0.0f;
 
@@ -86,11 +99,11 @@ int main(int argc, char** argv) {
         // Render to internal buffer of same resolution as physical screen
         BeginTextureMode(target);
 
-        DrawTexture(dayBg, 0, 0, (Color){255,255,255,255});
+        // DrawTexture(dayBg, 0, 0, (Color){255,255,255,255});
         ClearBackground((Color){0, 0, 0, 255});
 
         // Draw background parallax tex
-        DrawTexturePro(parallaxBgImg, (Rectangle){ 0, 0, 192,192 }, (Rectangle){32, 90, 192, 192}, (Vector2){96,96}, timeOfDayPercent * 360, WHITE); 
+        // DrawTexturePro(parallaxBgImg, (Rectangle){ 0, 0, 192,192 }, (Rectangle){32, 90, 192, 192}, (Vector2){96,96}, timeOfDayPercent * 360, WHITE); 
 
         // Draw time and date
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
