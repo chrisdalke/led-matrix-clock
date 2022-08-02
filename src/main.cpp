@@ -68,6 +68,15 @@ int main(int argc, char** argv) {
     int currentTemperature = 69;
     WeatherType weatherEnum = WeatherType::full_sun;
 
+
+    Texture2D weatherIconCloud1 = LoadTexture("resources/weather-icon-cloud-1.png");
+    Texture2D weatherIconCloud2 = LoadTexture("resources/weather-icon-cloud-2.png");
+    Texture2D weatherIconCloud3 = LoadTexture("resources/weather-icon-cloud-3.png");
+    Texture2D weatherIconCloud4 = LoadTexture("resources/weather-icon-cloud-4.png");
+    Texture2D weatherIconMoonCloud1 = LoadTexture("resources/weather-icon-moon-cloud-1.png");
+    Texture2D weatherIconSun = LoadTexture("resources/weather-icon-sun.png");
+    Texture2D weatherIconMoon = LoadTexture("resources/weather-icon-moon.png");
+
     float timeOfDayPercent = 0.0f;
 
     /*
@@ -109,7 +118,7 @@ int main(int argc, char** argv) {
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
         drawOutlinedText(dateBuffer, 2, 11, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
 
-        DrawRectangle(0, 24, 64, 32, (Color){0,0,0,100});
+        DrawRectangle(0, 24, 64, 32, (Color){30,30,30,255});
         drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
         DrawRectangle(58, 22, 5,5, (Color){0,0,0,255});
         DrawRectangle(59, 23, 3,3, (Color){255,255,255,255});
@@ -118,6 +127,9 @@ int main(int argc, char** argv) {
 
         // make everything rendered before this half as bright
         DrawRectangle(0, 0, 64, 32, (Color){0,0,0,128});
+
+        // Draw weather icon
+        DrawTexture(weatherIconCloud2, 46, 11, (Color){255,255,255,255});
         
         drawOutlinedText(timeBuffer2, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
         drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
