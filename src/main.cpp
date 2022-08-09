@@ -227,15 +227,16 @@ int main(int argc, char** argv) {
                 tempColor = lookupColors[temp];
             }
 
-            DrawLine(temp_xx+1, temp_yy, temp_xx+1, 30, Fade(tempColor, 0.5));
-            DrawLine(temp_xx+2, temp_yy, temp_xx+2, 30, Fade(tempColor, 0.5));
+            DrawLine(temp_xx+1, temp_yy, temp_xx+1, 30, Fade(tempColor, 0.25));
+            DrawLine(temp_xx+2, temp_yy, temp_xx+2, 30, Fade(tempColor, 0.25));
 
-            DrawPixel(temp_xx, temp_yy,  tempColor);
-            DrawPixel(temp_xx+1, temp_yy,  tempColor);
+            DrawPixel(temp_xx, temp_yy,  Fade(tempColor, 0.6));
+            DrawPixel(temp_xx+1, temp_yy,  Fade(tempColor, 0.6));
         };
 
         // mask out some edges of temp display
         DrawLine(1,0,1,32, (Color){0,0,0,255});
+        DrawLine(0,0,0,32, (Color){0,0,0,255});
 
         // Draw an icon indicating the current position in the day since midnight
         int timeOfDay_idx = map(secondInDay, 0, 86400, 0, 24);
@@ -244,9 +245,8 @@ int main(int argc, char** argv) {
         if (timeOfDay_idx >= 0 && timeOfDay_idx < 24) {
             int timeOfDay_yy = 29 - (map(temperatures[timeOfDay_idx], minTemperature, maxTemperature, 0, 7));
 
-            DrawLine(timeOfDay_xx+1, timeOfDay_yy, timeOfDay_xx+1,  30, (Color){255,255,255,128});
-            DrawRectangle(timeOfDay_xx-1, timeOfDay_yy-1, 3,3,(Color){200,200,200,255});
-            DrawPixel(timeOfDay_xx, timeOfDay_yy, (Color){0,0,0,255});
+            DrawLine(timeOfDay_xx+1, timeOfDay_yy, timeOfDay_xx+1,  30, (Color){255,255,255,100});
+            DrawPixel(timeOfDay_xx, timeOfDay_yy, (Color){255,255,255,255});
         }
 
         // Draw temperature
