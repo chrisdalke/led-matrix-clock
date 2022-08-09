@@ -74,6 +74,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmtlib)
 
+FetchContent_Declare(
+  cpr
+  GIT_REPOSITORY https://github.com/libcpr/cpr.git
+  GIT_TAG 1.9.1
+)
+FetchContent_MakeAvailable(cpr)
+
 FetchContent_Declare(json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
         GIT_TAG v3.9.1)
@@ -103,6 +110,7 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PRIVATE cpr::cpr)
 #target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 
 #--------------- PLATFORM-SPECIFIC DEPENDENCIES & FLAGS --------------------
