@@ -315,9 +315,9 @@ int main(int argc, char** argv) {
         float minuteAngleRad = ((minPercent * 360.0f) - 90.0f) * (PI/180.0f);
         float hourAngleRad = ((hourPercent * 360.0f) - 90.0f) * (PI/180.0f);
         DrawLineEx((Vector2){32, 16}, (Vector2){32.0f + cos(hourAngleRad) * 100.0f, 16.0f + sin(hourAngleRad) * 100.0f}, 2.0f, (Color){100,100,255,215});
-        DrawRectangle(1,1,62, 30, (Color){0,0,0,20});
+        DrawRectangle(1,1,62, 30, (Color){0,0,0,40});
         DrawLineEx((Vector2){32, 16}, (Vector2){32.0f + cos(minuteAngleRad) * 100.0f, 16.0f + sin(minuteAngleRad) * 100.0f}, 2.0f, (Color){100,100,255,235});
-        DrawRectangle(1,1,62, 30, (Color){0,0,0,20});
+        DrawRectangle(1,1,62, 30, (Color){0,0,0,40});
         DrawLineEx((Vector2){32, 16}, (Vector2){32.0f + cos(secondAngleRad) * 100.0f, 16.0f + sin(secondAngleRad) * 100.0f}, 2.0f, (Color){100,100,255,255});
         DrawRectangle(1,1,62, 30, (Color){0,0,0,230});
 
