@@ -483,6 +483,13 @@ int main(int argc, char** argv) {
 
         drawOutlinedText(dateBuffer, 64 - MeasureText(dateBuffer, 5) - 2, 11, 2, (Color){0,0,0,255}, (Color){128,128,128,255});
 
+        // Reduce brightness at nighttime
+        if ((secondInDay < (7 * 60 * 60) || (secondInDay > (22 * 60 * 60)))) {
+            BeginBlendMode(BLEND_MULTIPLIED);
+            DrawRectangle(0,0,texWidth,texHeight, (Color){128,128,128,255});
+            EndBlendMode();
+        }
+
         if (dimMode) {
             BeginBlendMode(BLEND_MULTIPLIED);
             DrawRectangle(0,0,texWidth,texHeight, (Color){64,64,64,255});
