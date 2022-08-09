@@ -79,6 +79,7 @@ typedef enum WeatherType
 int main(int argc, char** argv) {
     InitWindow(screenWidth, screenHeight, "LED Matrix Clock");
     RenderTexture2D target = LoadRenderTexture(texWidth, texHeight);
+    RenderTexture2D targetSecondHandOverlay = LoadRenderTexture(texWidth, texHeight);
     MatrixDriver matrixDriver(&argc, &argv, texWidth, texHeight);
 
     if (matrixDriver.isShim()) {
@@ -296,6 +297,16 @@ int main(int argc, char** argv) {
  
         BeginDrawing();
 
+
+        BeginTextureMode(targetSecondHandOverlay);
+        ClearBackground((Color){0, 0, 0, 255});
+        float minPercent = (secondInDay % 60) / 60.0f;
+        float startAngle = 245.0f - (minPercent * 360.0f);
+        float endAngle = 245.0f;
+        DrawCircleSector((Vector2){32, 16}, 48.0f, startAngle, endAngle, 256, (Color){255,255,255,64});
+        DrawRectangle(1,1,62, 30, BLACK);
+        EndTextureMode();
+
         // Render to internal buffer of same resolution as physical screen
         BeginTextureMode(target);
 
@@ -437,6 +448,10 @@ int main(int argc, char** argv) {
         DrawRectangle(2 + temperatureLength, 22, 5,5, (Color){0,0,0,255});
         DrawRectangle(3 + temperatureLength, 23, 3,3, (Color){128,128,128,255});
         DrawRectangle(4 + temperatureLength, 24, 1,1, (Color){0,0,0,255});
+
+        BeginBlendMode(BLEND_ADDITIVE);
+        DrawTexturePro(targetSecondHandOverlay.texture, (Rectangle){ 0, 0, 64, -32 }, (Rectangle){ 0, 0, 64, 32 }, (Vector2){0,0}, 0.0f, WHITE);           
+        EndBlendMode();
 
         EndTextureMode();
 
