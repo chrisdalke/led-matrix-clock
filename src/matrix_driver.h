@@ -16,4 +16,5 @@ class MatrixDriver {
         void flipBuffer();
 
         bool isShim();
+        bool hardwareSwitchPressed();
 };

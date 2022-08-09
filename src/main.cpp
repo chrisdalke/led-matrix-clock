@@ -112,6 +112,7 @@ int main(int argc, char** argv) {
     json jsonWeatherData;
 
     bool dimMode = false;
+    bool dimModeLatch = false;
 
     std::string shortForecast;
 
@@ -283,8 +284,13 @@ int main(int argc, char** argv) {
 
         // Debug: toggle brightness
         // On real device this is done with the hardware button
-        if (IsKeyPressed(32)) {
-            dimMode = !dimMode;
+        if (IsKeyDown(32) || matrixDriver.hardwareSwitchPressed()) {
+            if (!dimModeLatch) {
+                dimMode = !dimMode;
+                dimModeLatch = true;
+            }
+        } else {
+            dimModeLatch = false;
         }
 
         std::time_t now = std::time(nullptr);

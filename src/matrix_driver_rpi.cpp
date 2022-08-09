@@ -2,6 +2,7 @@
 #include "led-matrix.h"
 #include "graphics.h"
 #include <unistd.h>
+#include <wiringPi.h>
 
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
@@ -28,6 +29,11 @@ MatrixDriver::MatrixDriver(int* argc, char **argv[], int _width, int _height) {
 
     matrix = RGBMatrix::CreateFromFlags(argc, argv, &matrix_options);
     canvas = matrix->CreateFrameCanvas();
+
+    // init wiringpi
+    wiringPiSetupGpio();
+    pinMode(25, INPUT);
+    //pullUpDnControl(6, PUD_UP);
 
     usleep(2000000);
 }
@@ -59,4 +65,8 @@ void MatrixDriver::flipBuffer() {
 
 bool MatrixDriver::isShim() {
     return false;
+}
+
+bool MatrixDriver::hardwareSwitchPressed() {
+    return digitalRead(25);
 }

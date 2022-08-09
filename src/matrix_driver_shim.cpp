@@ -32,3 +32,7 @@ void MatrixDriver::flipBuffer() {
 bool MatrixDriver::isShim() {
     return true;
 }
+
+bool MatrixDriver::hardwareSwitchPressed() {
+    return false;
+}
