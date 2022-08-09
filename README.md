@@ -33,3 +33,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 -rpi-rgb-led-matrix
 https://github.com/hzeller/rpi-rgb-led-matrix
+
+-sunset
+https://github.com/buelowp/sunset

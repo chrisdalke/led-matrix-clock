@@ -130,6 +130,8 @@ int main(int argc, char** argv) {
     }
 
     int secondInDay = seconds_since_local_midnight();
+    int sunriseSecondsTime = 5 * 60 * 60;
+    int sunsetSecondsTime = 20 * 60 * 60;
 
     /*
     - ring with sun, moon, sunset, stars, etc as base layer
@@ -227,11 +229,22 @@ int main(int argc, char** argv) {
                 tempColor = lookupColors[temp];
             }
 
-            DrawLine(temp_xx+1, temp_yy, temp_xx+1, 30, Fade(tempColor, 0.25));
-            DrawLine(temp_xx+2, temp_yy, temp_xx+2, 30, Fade(tempColor, 0.25));
+            float fadePrimaryAmount = 0.25f;
+            float fadeSecondaryAmount = 0.6f;
 
-            DrawPixel(temp_xx, temp_yy,  Fade(tempColor, 0.6));
-            DrawPixel(temp_xx+1, temp_yy,  Fade(tempColor, 0.6));
+            int secondTime = i * 60 * 60;
+            if (secondTime <= sunriseSecondsTime || secondTime >= sunsetSecondsTime) {
+                // Nighttime
+                fadePrimaryAmount = 0.15f;
+                fadeSecondaryAmount = 0.4f;
+            }
+
+            DrawLine(temp_xx+1, temp_yy, temp_xx+1, 30, Fade(tempColor, fadePrimaryAmount));
+            DrawLine(temp_xx+2, temp_yy, temp_xx+2, 30, Fade(tempColor, fadePrimaryAmount));
+
+            DrawPixel(temp_xx, temp_yy,  Fade(tempColor, fadeSecondaryAmount));
+            DrawPixel(temp_xx+1, temp_yy,  Fade(tempColor, fadeSecondaryAmount));
+
         };
 
         // mask out some edges of temp display
@@ -245,8 +258,8 @@ int main(int argc, char** argv) {
         if (timeOfDay_idx >= 0 && timeOfDay_idx < 24) {
             int timeOfDay_yy = 29 - (map(temperatures[timeOfDay_idx], minTemperature, maxTemperature, 0, 7));
 
-            DrawLine(timeOfDay_xx+1, timeOfDay_yy, timeOfDay_xx+1,  30, (Color){255,255,255,100});
-            DrawPixel(timeOfDay_xx, timeOfDay_yy, (Color){255,255,255,255});
+            DrawLine(timeOfDay_xx+1, timeOfDay_yy, timeOfDay_xx+1,  30, (Color){255,255,255,200});
+            //DrawPixel(timeOfDay_xx+1, timeOfDay_yy, (Color){255,255,255,255});
         }
 
         // Draw temperature
