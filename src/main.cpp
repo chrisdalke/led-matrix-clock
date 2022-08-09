@@ -235,8 +235,8 @@ int main(int argc, char** argv) {
             int secondTime = i * 60 * 60;
             if (secondTime <= sunriseSecondsTime || secondTime >= sunsetSecondsTime) {
                 // Nighttime
-                fadePrimaryAmount = 0.15f;
-                fadeSecondaryAmount = 0.4f;
+                fadePrimaryAmount = 0.1f;
+                fadeSecondaryAmount = 0.2f;
             }
 
             DrawLine(temp_xx+1, temp_yy, temp_xx+1, 30, Fade(tempColor, fadePrimaryAmount));
