@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
     if (matrixDriver.isShim()) {
         SetTargetFPS(30);
     } else {
-        SetTargetFPS(1);
+        SetTargetFPS(5);
     }
 
 
@@ -481,15 +481,19 @@ int main(int argc, char** argv) {
         DrawTexturePro(targetSecondHandOverlay.texture, (Rectangle){ 0, 0, 64, -32 }, (Rectangle){ 0, 0, 64, 32 }, (Vector2){0,0}, 0.0f, WHITE);           
         EndBlendMode();
 
+        drawOutlinedText(dateBuffer, 64 - MeasureText(dateBuffer, 5) - 2, 11, 2, (Color){0,0,0,255}, (Color){128,128,128,255});
+
+        if (dimMode) {
+            BeginBlendMode(BLEND_MULTIPLIED);
+            DrawRectangle(0,0,texWidth,texHeight, (Color){64,64,64,255});
+            EndBlendMode();
+        }
+
         EndTextureMode();
 
         // Draw a debug UI on the software window
         ClearBackground((Color){0, 0, 0, 255});
-        if (dimMode) {
-            DrawTexturePro(target.texture, (Rectangle){ 0, 0, texWidth, -texHeight }, (Rectangle){ 0, 0, screenWidth, screenHeight }, (Vector2){0,0}, 0.0f, (Color){255,255,255,100}); 
-        } else {
-            DrawTexturePro(target.texture, (Rectangle){ 0, 0, texWidth, -texHeight }, (Rectangle){ 0, 0, screenWidth, screenHeight }, (Vector2){0,0}, 0.0f, WHITE); 
-        }
+        DrawTexturePro(target.texture, (Rectangle){ 0, 0, texWidth, -texHeight }, (Rectangle){ 0, 0, screenWidth, screenHeight }, (Vector2){0,0}, 0.0f, WHITE); 
 
         EndDrawing();
 
