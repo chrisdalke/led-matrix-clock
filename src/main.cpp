@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
     int maxTemperature = 80;
 
     for (int i = 0; i < 24; i++) {
-        temperatures[i] = 0 + ((i%12)*5);
+        temperatures[i] = 0 + (i*5);
     }
     uint64_t lastWeatherQuery = 0;
     std::string rawWeatherData;
@@ -181,7 +181,7 @@ int main(int argc, char** argv) {
 
         // Draw time and date
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
-        drawOutlinedText(dateBuffer, 2, 11, 1, (Color){0,0,0,255}, (Color){255,255,255,255});
+        drawOutlinedText(dateBuffer, 2, 11, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
 
         //DrawRectangle(0, 24, 64, 32, (Color){30,30,30,255});
         DrawRectangle(58, 22, 5,5, (Color){0,0,0,255});
@@ -192,6 +192,9 @@ int main(int argc, char** argv) {
         // make everything rendered before this half as bright
         DrawRectangle(0, 0, 64, 32, (Color){0,0,0,128});
 
+        // Draw weather icon
+        DrawTexture(weatherIconCloud2, 46, 11, (Color){255,255,255,255});
+        
         drawOutlinedText(timeBuffer2, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
         
         // find max and min temperatures
@@ -210,9 +213,9 @@ int main(int argc, char** argv) {
 
         // Draw temperature line for the current day
         for (int i = 0; i < 24; i++) {
-            int temp_xx = 0 + (i*2.7);
+            int temp_xx = 0 + (i*2);
             int temp = temperatures[i];
-            int temp_yy = 31 - (map(temp, minTemperature, maxTemperature, 0, 16));
+            int temp_yy = 29 - (map(temp, minTemperature, maxTemperature, 0, 7));
 
             Color tempColor = (Color){255,255,255,255};
             if (temp < 0) {
@@ -224,21 +227,20 @@ int main(int argc, char** argv) {
                 tempColor = lookupColors[temp];
             }
 
-            DrawLine(temp_xx+1, temp_yy, temp_xx+1, 32, Fade(tempColor, 0.25));
-            DrawLine(temp_xx+2, temp_yy, temp_xx+2, 32, Fade(tempColor, 0.25));
-            DrawLine(temp_xx+3, temp_yy, temp_xx+3, 32, Fade(tempColor, 0.25));
+            DrawLine(temp_xx+1, temp_yy, temp_xx+1, 30, Fade(tempColor, 0.25));
+            DrawLine(temp_xx+2, temp_yy, temp_xx+2, 30, Fade(tempColor, 0.25));
 
             DrawPixel(temp_xx, temp_yy,  Fade(tempColor, 0.6));
-            //DrawPixel(temp_xx+1, temp_yy,  Fade(tempColor, 0.6));
+            DrawPixel(temp_xx+1, temp_yy,  Fade(tempColor, 0.6));
         };
 
         // mask out some edges of temp display
-        //DrawLine(1,0,1,32, (Color){0,0,0,255});
-        //DrawLine(0,0,0,32, (Color){0,0,0,255});
+        DrawLine(1,0,1,32, (Color){0,0,0,255});
+        DrawLine(0,0,0,32, (Color){0,0,0,255});
 
         // Draw an icon indicating the current position in the day since midnight
         int timeOfDay_idx = map(secondInDay, 0, 86400, 0, 24);
-        int timeOfDay_xx = map(secondInDay, 0, 86400, 0, (24*2.7));
+        int timeOfDay_xx = map(secondInDay, 0, 86400, 0, (24*1.8));
 
         if (timeOfDay_idx >= 0 && timeOfDay_idx < 24) {
             int timeOfDay_yy = 29 - (map(temperatures[timeOfDay_idx], minTemperature, maxTemperature, 0, 7));
@@ -246,9 +248,6 @@ int main(int argc, char** argv) {
             DrawLine(timeOfDay_xx+1, timeOfDay_yy, timeOfDay_xx+1,  30, (Color){255,255,255,100});
             DrawPixel(timeOfDay_xx, timeOfDay_yy, (Color){255,255,255,255});
         }
-
-        // Draw weather icon
-        DrawTexture(weatherIconCloud1, 46, 2, (Color){255,255,255,255});
 
         // Draw temperature
         drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
