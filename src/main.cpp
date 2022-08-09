@@ -20,6 +20,30 @@ uint64_t timeSinceEpochMillisec() {
   return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }
 
+long map(long x, long in_min, long in_max, long out_min, long out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+double seconds_since_local_midnight() {
+  time_t now;
+  if (time(&now) == -1) {
+    return -1;
+  }
+  struct tm timestamp;
+  if (localtime_r(&now, &timestamp) == 0) { // C23
+    return -1;
+  }
+  timestamp.tm_isdst = -1; // Important
+  timestamp.tm_hour = 0;
+  timestamp.tm_min = 0;
+  timestamp.tm_sec = 0;
+  time_t midnight = mktime(&timestamp);
+  if (midnight == -1) {
+    return -1;
+  }
+  return difftime(now, midnight);
+}
+
 void drawOutlinedText(const char* text, int x, int y, int size, Color bg, Color fg) {
     DrawText(text, x-1, y-1, size, bg);
     DrawText(text, x-0, y-1, size, bg);
@@ -72,6 +96,9 @@ int main(int argc, char** argv) {
     int minTemperature = 60;
     int maxTemperature = 80;
 
+    for (int i = 0; i < 24; i++) {
+        temperatures[i] = 0 + (i*5);
+    }
     uint64_t lastWeatherQuery = 0;
     std::string rawWeatherData;
 
@@ -94,6 +121,16 @@ int main(int argc, char** argv) {
 
     float timeOfDayPercent = 0.0f;
 
+    // Convert temperature as integer degree F into a table of colors
+    Texture2D temperatureScaleImg = LoadTexture("resources/temperature-scale.png");
+    Image colorLookupTable = LoadImageFromTexture(temperatureScaleImg);
+    Color lookupColors[128];
+    for (int i = 0; i < 128; i++) {
+        lookupColors[i] = GetImageColor(colorLookupTable, 0, i);
+    }
+
+    int secondInDay = seconds_since_local_midnight();
+
     /*
     - ring with sun, moon, sunset, stars, etc as base layer
     
@@ -115,6 +152,7 @@ int main(int argc, char** argv) {
             std::cout << "Querying weather API..." << std::endl;
             lastWeatherQuery = timeSinceEpochMillisec();
         }
+        secondInDay = seconds_since_local_midnight();
 
         // Debug: toggle brightness
         // On real device this is done with the hardware button
@@ -145,8 +183,7 @@ int main(int argc, char** argv) {
         drawOutlinedText(timeBuffer, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
         drawOutlinedText(dateBuffer, 2, 11, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
 
-        DrawRectangle(0, 24, 64, 32, (Color){30,30,30,255});
-        drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
+        //DrawRectangle(0, 24, 64, 32, (Color){30,30,30,255});
         DrawRectangle(58, 22, 5,5, (Color){0,0,0,255});
         DrawRectangle(59, 23, 3,3, (Color){255,255,255,255});
         DrawRectangle(60, 24, 1,1, (Color){0,0,0,255});
@@ -159,14 +196,62 @@ int main(int argc, char** argv) {
         DrawTexture(weatherIconCloud1, 46, 11, (Color){255,255,255,255});
         
         drawOutlinedText(timeBuffer2, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
-        drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
+        
+        // find max and min temperatures
+        minTemperature = 999;
+        maxTemperature = -999;
+        for (int i = 0; i < 24; i++) {
+            if (temperatures[i] < minTemperature) {
+                minTemperature = temperatures[i];
+            }
+            if (temperatures[i] > maxTemperature) {
+                maxTemperature = temperatures[i];
+            }
+        }
+
+        //DrawRectangle(0, 22, 48, 8, (Color){0,0,255,255});
 
         // Draw temperature line for the current day
         for (int i = 0; i < 24; i++) {
+            int temp_xx = 0 + (i*2);
+            int temp = temperatures[i];
+            int temp_yy = 29 - (map(temp, minTemperature, maxTemperature, 0, 7));
 
+            Color tempColor = (Color){255,255,255,255};
+            if (temp < 0) {
+                tempColor = (Color){255,255,255,255};
+            } else if (temp >= 128) {
+                tempColor = (Color){255,50,50,255};
+            } else {
+                // Valid lookup
+                tempColor = lookupColors[temp];
+            }
+
+            DrawLine(temp_xx+1, temp_yy, temp_xx+1, 30, Fade(tempColor, 0.5));
+            DrawLine(temp_xx+2, temp_yy, temp_xx+2, 30, Fade(tempColor, 0.5));
+
+            DrawPixel(temp_xx, temp_yy,  tempColor);
+            DrawPixel(temp_xx+1, temp_yy,  tempColor);
+        };
+
+        // mask out some edges of temp display
+        DrawLine(1,0,1,32, (Color){0,0,0,255});
+
+        // Draw an icon indicating the current position in the day since midnight
+        int timeOfDay_idx = map(secondInDay, 0, 86400, 0, 24);
+        int timeOfDay_xx = map(secondInDay, 0, 86400, 0, (24*1.8));
+
+        if (timeOfDay_idx >= 0 && timeOfDay_idx < 24) {
+            int timeOfDay_yy = 29 - (map(temperatures[timeOfDay_idx], minTemperature, maxTemperature, 0, 7));
+
+            DrawLine(timeOfDay_xx+1, timeOfDay_yy, timeOfDay_xx+1,  30, (Color){255,255,255,128});
+            DrawRectangle(timeOfDay_xx-1, timeOfDay_yy-1, 3,3,(Color){200,200,200,255});
+            DrawPixel(timeOfDay_xx, timeOfDay_yy, (Color){0,0,0,255});
         }
 
-
+        // Draw temperature
+        drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
+        drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
 
         EndTextureMode();
 
