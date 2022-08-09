@@ -33,7 +33,7 @@ MatrixDriver::MatrixDriver(int* argc, char **argv[], int _width, int _height) {
     // init wiringpi
     wiringPiSetupGpio();
     pinMode(25, INPUT);
-    //pullUpDnControl(6, PUD_UP);
+    pullUpDnControl(25, PUD_UP);
 
     usleep(2000000);
 }
@@ -68,5 +68,5 @@ bool MatrixDriver::isShim() {
 }
 
 bool MatrixDriver::hardwareSwitchPressed() {
-    return digitalRead(25);
+    return !digitalRead(25);
 }
