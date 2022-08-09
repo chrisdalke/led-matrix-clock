@@ -300,15 +300,26 @@ int main(int argc, char** argv) {
 
         BeginTextureMode(targetSecondHandOverlay);
         ClearBackground((Color){0, 0, 0, 100});
-        float minPercent = (secondInDay % 60) / 60.0f;
+
+        auto time = std::localtime(&now);
+
+        float secPercent = time->tm_sec / 60.0f;
+        float hourPercent = time->tm_hour / 12.0f;
+        float minPercent = time->tm_min / 60.0f;
         // float startAngle = 245.0f - (minPercent * 360.0f);
         // float endAngle = 245.0f;
         // DrawCircleSector((Vector2){32, 16}, 48.0f, startAngle, endAngle, 256, (Color){255,255,255,32});
         // DrawCircleSector((Vector2){32, 16}, 48.0f, startAngle, startAngle + 10.0f, 256, (Color){255,255,255,255});
 
-        float angleRad = (minPercent * 360.0f) * (PI/180.0f);
-        DrawLineEx((Vector2){32, 16}, (Vector2){32.0f + cos(angleRad) * 100.0f, 16.0f + sin(angleRad) * 100.0f}, 2.0f, (Color){255,255,255,255});
-        DrawRectangle(1,1,62, 30, (Color){0,0,0,200});
+        float secondAngleRad = ((secPercent * 360.0f) - 90.0f) * (PI/180.0f);
+        float minuteAngleRad = ((minPercent * 360.0f) - 90.0f) * (PI/180.0f);
+        float hourAngleRad = ((hourPercent * 360.0f) - 90.0f) * (PI/180.0f);
+        DrawLineEx((Vector2){32, 16}, (Vector2){32.0f + cos(hourAngleRad) * 100.0f, 16.0f + sin(hourAngleRad) * 100.0f}, 2.0f, (Color){100,100,255,215});
+        DrawRectangle(1,1,62, 30, (Color){0,0,0,20});
+        DrawLineEx((Vector2){32, 16}, (Vector2){32.0f + cos(minuteAngleRad) * 100.0f, 16.0f + sin(minuteAngleRad) * 100.0f}, 2.0f, (Color){100,100,255,235});
+        DrawRectangle(1,1,62, 30, (Color){0,0,0,20});
+        DrawLineEx((Vector2){32, 16}, (Vector2){32.0f + cos(secondAngleRad) * 100.0f, 16.0f + sin(secondAngleRad) * 100.0f}, 2.0f, (Color){100,100,255,255});
+        DrawRectangle(1,1,62, 30, (Color){0,0,0,230});
 
 
 
