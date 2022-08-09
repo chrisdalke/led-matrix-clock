@@ -17,6 +17,11 @@ MatrixDriver::MatrixDriver(int* argc, char **argv[], int _width, int _height) {
     this->width = _width;
     this->height = _height;
 
+    // init wiringpi
+    wiringPiSetupGpio();
+    pinMode(25, INPUT);
+    pullUpDnControl(25, PUD_UP);
+
     RGBMatrix::Options matrix_options;
     matrix_options.hardware_mapping = "adafruit-hat-pwm";
     matrix_options.rows = 32;
@@ -29,11 +34,6 @@ MatrixDriver::MatrixDriver(int* argc, char **argv[], int _width, int _height) {
 
     matrix = RGBMatrix::CreateFromFlags(argc, argv, &matrix_options);
     canvas = matrix->CreateFrameCanvas();
-
-    // init wiringpi
-    wiringPiSetupGpio();
-    pinMode(25, INPUT);
-    pullUpDnControl(25, PUD_UP);
 
     usleep(2000000);
 }
