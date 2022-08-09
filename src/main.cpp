@@ -215,10 +215,21 @@ int main(int argc, char** argv) {
         ClearBackground((Color){0, 0, 0, 255});
 
         // dither
-        for (int x = -1; x < 20; x++) {
+
+        Color currentTempColor = (Color){255,255,255,255};
+        if (temperatures[0] < 0) {
+            currentTempColor = (Color){255,255,255,255};
+        } else if (temperatures[0] >= 128) {
+            currentTempColor = (Color){255,50,50,255};
+        } else {
+            // Valid lookup
+            currentTempColor = lookupColors[temperatures[0]];
+        }
+
+        for (int x = -1; x < 18; x++) {
             for (int y = -1; y < 32; y++) {
                 if ((x+y) % 2) {
-                    DrawPixel(x, y, (Color){255,255,255,128});
+                    DrawPixel(x, y, Fade(currentTempColor, 0.3f));
                 }
             }
         }
@@ -229,13 +240,6 @@ int main(int argc, char** argv) {
         // Draw time and date
         drawOutlinedText(timeBuffer, 64 - MeasureText(timeBuffer, 5) - 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
         drawOutlinedText(dateBuffer, 64 - MeasureText(dateBuffer, 5) - 2, 11, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
-
-        //DrawRectangle(0, 24, 64, 32, (Color){30,30,30,255});
-        int temperatureLength = MeasureText(fmt::format("{}", temperatures[0]).c_str(), 2);
-        DrawRectangle(2 + temperatureLength, 22, 5,5, (Color){0,0,0,255});
-        DrawRectangle(3 + temperatureLength, 23, 3,3, (Color){255,255,255,255});
-        DrawRectangle(4 + temperatureLength, 24, 1,1, (Color){0,0,0,255});
-
 
         // make everything rendered before this half as bright
         DrawRectangle(0, 0, 64, 32, (Color){0,0,0,128});
@@ -257,11 +261,11 @@ int main(int argc, char** argv) {
             }
         }
 
-        DrawRectangle(0, 0, 1, 1, (Color){0,0,255,255});
+        // DrawRectangle(0, 0, 1, 1, (Color){0,0,255,255});
 
         // Draw temperature line for the current day
         for (int i = 0; i < 24; i++) {
-            int temp_xx = 16 + (i*2);
+            int temp_xx = 19 + (i*2);
             int temp = temperatures[i];
             int temp_yy = 31 - (map(temp, minTemperature, maxTemperature, 1, 10));
 
@@ -293,23 +297,37 @@ int main(int argc, char** argv) {
 
         };
 
-        // mask out some edges of temp display
-        DrawLine(1,0,1,32, (Color){0,0,0,255});
-        DrawLine(0,0,0,32, (Color){0,0,0,255});
+        // // mask out some edges of temp display
+        // DrawLine(1,0,1,32, (Color){0,0,0,255});
+        // DrawLine(0,0,0,32, (Color){0,0,0,255});
 
-        // // Draw an icon indicating the current position in the day since midnight
-        // int timeOfDay_idx = map(secondInDay, 0, 86400, 0, 24);
-        // int timeOfDay_xx = map(secondInDay, 0, 86400, 0, (24*1.8));
+        // draw icon on current temp
+        int timeOfDay_yy = 31 - (map(temperatures[0], minTemperature, maxTemperature, 1, 10));
+        DrawLine(19, 0, 19,  32, Fade(currentTempColor, 0.25f));
 
-        // if (timeOfDay_idx >= 0 && timeOfDay_idx < 24) {
-        //     int timeOfDay_yy = 29 - (map(temperatures[timeOfDay_idx], minTemperature, maxTemperature, 0, 7));
+        for (int i = 10; i >= 0.5; i = i * 0.8) {
+            // DrawLine(19, timeOfDay_yy - i, 19,  timeOfDay_yy + i + 1, Fade(currentTempColor, 0.4f));
+            DrawLine(19, timeOfDay_yy - i, 19,  timeOfDay_yy + i + 1, Fade(currentTempColor, (10 - i) / 10.0f));
+            DrawLine(19 - (i/2), timeOfDay_yy, 19 + (i/2) + 1,  timeOfDay_yy, Fade(currentTempColor, (10 - i) / 10.0f));
 
-        //     DrawLine(timeOfDay_xx+1, timeOfDay_yy, timeOfDay_xx+1,  30, (Color){255,255,255,200});
-        //     //DrawPixel(timeOfDay_xx+1, timeOfDay_yy, (Color){255,255,255,255});
-        // }
+        }
+
+        // DrawLine(19, timeOfDay_yy - 3, 19,  timeOfDay_yy + 4, Fade(currentTempColor, 0.75f));
+        // DrawLine(19, timeOfDay_yy - 1, 19,  timeOfDay_yy + 2, Fade(currentTempColor, 0.75f));
+        // DrawLine(19, timeOfDay_yy, 19,  timeOfDay_yy + 1, Fade(currentTempColor, 0.75f));
+
+        // DrawRectangle(16, timeOfDay_yy - 2, 5,5, (Color){0,0,0,255});
+        // DrawRectangle(17, timeOfDay_yy - 1, 3,3, (Color){128,128,128,255});
+        // DrawRectangle(18, timeOfDay_yy, 1,1, (Color){0,0,0,255});
 
         // Draw temperature
         drawOutlinedText(fmt::format("{}", temperatures[0]).c_str(), 2, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
+
+        //DrawRectangle(0, 24, 64, 32, (Color){30,30,30,255});
+        int temperatureLength = MeasureText(fmt::format("{}", temperatures[0]).c_str(), 2);
+        DrawRectangle(2 + temperatureLength, 22, 5,5, (Color){0,0,0,255});
+        DrawRectangle(3 + temperatureLength, 23, 3,3, (Color){128,128,128,255});
+        DrawRectangle(4 + temperatureLength, 24, 1,1, (Color){0,0,0,255});
 
         EndTextureMode();
 
