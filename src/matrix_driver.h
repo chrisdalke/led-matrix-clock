@@ -14,4 +14,6 @@ class MatrixDriver {
 
         void writePixel(int x, int y, int r, int g, int b);
         void flipBuffer();
+
+        bool isShim();
 };

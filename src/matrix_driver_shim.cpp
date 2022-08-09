@@ -28,3 +28,7 @@ void MatrixDriver::writePixel(int x, int y, int r, int g, int b) {
 void MatrixDriver::flipBuffer() {
     // std::cout << "Flipping shim pixel buffer" << std::endl;
 }
+
+bool MatrixDriver::isShim() {
+    return true;
+}
