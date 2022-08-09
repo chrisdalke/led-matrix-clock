@@ -285,11 +285,14 @@ int main(int argc, char** argv) {
         // Debug: toggle brightness
         // On real device this is done with the hardware button
         if (IsKeyDown(32) || matrixDriver.hardwareSwitchPressed()) {
+            std::cout << "Button down" << std::endl;
             if (!dimModeLatch) {
                 dimMode = !dimMode;
                 dimModeLatch = true;
+                std::cout << "Toggled dim mode to " << dimMode << std::endl;
             }
         } else {
+            std::cout << "Button up" << std::endl;
             dimModeLatch = false;
         }
 
