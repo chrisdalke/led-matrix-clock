@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
 
     while (!WindowShouldClose()) {
         // Query weather data if it is expired
-        if (timeSinceEpochMillisec() - lastWeatherQuery > 30000) {
+        if (timeSinceEpochMillisec() - lastWeatherQuery > 60000) {
             std::cout << "Querying weather API..." << std::endl;
             lastWeatherQuery = timeSinceEpochMillisec();
 
@@ -214,6 +214,15 @@ int main(int argc, char** argv) {
         // DrawTexture(dayBg, 0, 0, (Color){255,255,255,255});
         ClearBackground((Color){0, 0, 0, 255});
 
+        // dither
+        for (int x = -1; x < 20; x++) {
+            for (int y = -1; y < 32; y++) {
+                if ((x+y) % 2) {
+                    DrawPixel(x, y, (Color){255,255,255,128});
+                }
+            }
+        }
+
         // Draw background parallax tex
         // DrawTexturePro(parallaxBgImg, (Rectangle){ 0, 0, 192,192 }, (Rectangle){32, 90, 192, 192}, (Vector2){96,96}, timeOfDayPercent * 360, WHITE); 
 
@@ -248,7 +257,7 @@ int main(int argc, char** argv) {
             }
         }
 
-        //DrawRectangle(0, 22, 48, 8, (Color){0,0,255,255});
+        DrawRectangle(0, 0, 1, 1, (Color){0,0,255,255});
 
         // Draw temperature line for the current day
         for (int i = 0; i < 24; i++) {
