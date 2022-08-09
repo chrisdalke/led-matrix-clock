@@ -9,6 +9,8 @@
 #include "matrix_driver.h"
 #include <nlohmann/json.hpp>
 #include <cpr/cpr.h>
+#include <boost/algorithm/string.hpp>    
+#include <regex>
 
 using json = nlohmann::json;
 
@@ -66,12 +68,12 @@ typedef enum WeatherType
 {
     full_sun = 1,
     partial_sun = 2,
-    cloudy_sun = 3,
+    cloudy = 3,
     cloudy_rain = 4,
-    cloudy_thunder = 5,
-    full_moon = 6,
-    partial_moon = 7,
-    cloudy_moon = 8
+    cloudy_snow = 5,
+    cloudy_thunder = 6,
+    cloudy_moon = 7,
+    full_moon = 8
 } WeatherType;
 
 int main(int argc, char** argv) {
@@ -100,6 +102,8 @@ int main(int argc, char** argv) {
     int minTemperature = 60;
     int maxTemperature = 80;
 
+    int tempDisplayHeight = 10;
+
     for (int i = 0; i < 24; i++) {
         temperatures[i] = 60;
     }
@@ -110,6 +114,14 @@ int main(int argc, char** argv) {
 
     std::string shortForecast;
 
+    std::regex rainRegex("rain");
+    std::regex snowRegex("snow");
+    std::regex chanceOfRegex("chance");
+    std::regex thunderRegex("thunder");
+    std::regex cloudyRegex("cloudy");
+    std::regex clearRegex("clear");
+    std::regex partlyRegex("partly");
+
     // Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){0, 0, 0,255}, (Color){43, 169, 252,255}));
     // Texture2D parallaxBgImg = LoadTexture("resources/bg.png");
     WeatherType weatherEnum = WeatherType::full_sun;
@@ -119,6 +131,7 @@ int main(int argc, char** argv) {
     Texture2D weatherIconCloud2 = LoadTexture("resources/weather-icon-cloud-2.png");
     Texture2D weatherIconCloud3 = LoadTexture("resources/weather-icon-cloud-3.png");
     Texture2D weatherIconCloud4 = LoadTexture("resources/weather-icon-cloud-4.png");
+    Texture2D weatherIconSnow = LoadTexture("resources/weather-icon-snow.png");
     Texture2D weatherIconMoonCloud1 = LoadTexture("resources/weather-icon-moon-cloud-1.png");
     Texture2D weatherIconSun = LoadTexture("resources/weather-icon-sun.png");
     Texture2D weatherIconMoon = LoadTexture("resources/weather-icon-moon.png");
@@ -167,6 +180,7 @@ int main(int argc, char** argv) {
 
                     json periods = rawPayload["properties"]["periods"];
 
+                    bool isDaytime = true;
                     for (auto& period : periods) {
                         int hourAfterNow = period["number"];
                         int temperature = period["temperature"];
@@ -175,14 +189,88 @@ int main(int argc, char** argv) {
                         if (hourAfterNow <= 24) {
                             temperatures[hourAfterNow - 1] = temperature;
                         }
+
+                        if (hourAfterNow <= 1) {
+                            isDaytime = period["isDaytime"];
+                        }
                     }
 
                     std::cout << "FORECAST TEMPS:" << std::endl;
                     for (int i = 0; i < 24; i++) {
                         std::cout << fmt::format("hour {}: {}deg F", i + 1, temperatures[i]) << std::endl;
                     }
+                    boost::to_lower(shortForecast);
+
                     std::cout << "CURRENT WEATHER" << std::endl;
                     std::cout << shortForecast << std::endl;
+
+
+                    // parse weather string into an icon
+                    // typedef enum WeatherType
+                    // {
+                    //     full_sun = 1,
+                    //     partial_sun = 2,
+                    //     cloudy = 3,
+                    //     cloudy_rain = 4,
+                    //     cloudy_snow = 5,
+                    //     cloudy_thunder = 6,
+                    //     cloudy_moon = 7,
+                    //     full_moon = 8
+                    // } WeatherType;
+
+                    // std::regex rainRegex("rain");
+                    // std::regex snowRegex("snow");
+                    // std::regex chanceOfRegex("chance");
+                    // std::regex thunderRegex("thunder");
+                    // std::regex cloudyRegex("cloudy");
+                    // std::regex clearRegex("clear");
+
+                    if (shortForecast.find("sunny") != std::string::npos) {
+                        weatherEnum = WeatherType::full_sun;
+                        std::cout << "matched full sun" << std::endl;
+                    }
+                    if (shortForecast.find("cloud") != std::string::npos) {
+                        weatherEnum = WeatherType::cloudy;
+                        std::cout << "matched cloudy" << std::endl;
+                    }
+                    if (shortForecast.find("partly") != std::string::npos) {
+                        weatherEnum = WeatherType::partial_sun;
+                        std::cout << "matched partial sun" << std::endl;
+                    }
+                    if (shortForecast.find("clear") != std::string::npos) {
+                        weatherEnum = WeatherType::full_sun;
+                        std::cout << "matched clear" << std::endl;
+                    }
+                    if (shortForecast.find("fog") != std::string::npos) {
+                        weatherEnum = WeatherType::cloudy;
+                        std::cout << "matched foggy" << std::endl;
+                    }
+                    if (shortForecast.find("haze") != std::string::npos) {
+                        weatherEnum = WeatherType::cloudy;
+                        std::cout << "matched haze" << std::endl;
+                    }
+                    if (shortForecast.find("rain") != std::string::npos) {
+                        weatherEnum = WeatherType::cloudy_rain;
+                        std::cout << "matched rainy" << std::endl;
+                    }
+                    if (shortForecast.find("snow") != std::string::npos) {
+                        weatherEnum = WeatherType::cloudy_snow;
+                        std::cout << "matched snow" << std::endl;
+                    }
+                    if (shortForecast.find("thunder") != std::string::npos) {
+                        weatherEnum = WeatherType::cloudy_thunder;
+                        std::cout << "matched thunder" << std::endl;
+                    }
+
+                    if (!isDaytime && weatherEnum == WeatherType::full_sun) {
+                        weatherEnum = WeatherType::full_moon;
+                    }
+
+                    if (!isDaytime && weatherEnum == WeatherType::partial_sun) {
+                        weatherEnum = WeatherType::cloudy_moon;
+                    }
+
+
                 } catch (std::exception &e) {
                     std::cout << "Failed to parse weather API!" << std::endl;
                 }
@@ -245,7 +333,26 @@ int main(int argc, char** argv) {
         DrawRectangle(0, 0, 64, 32, (Color){0,0,0,128});
 
         // Draw weather icon
-        DrawTexture(weatherIconCloud2, 1, 11, (Color){255,255,255,255});
+        if (weatherEnum == WeatherType::full_sun) {
+            DrawTexture(weatherIconSun, 1, 11, (Color){255,255,255,255});
+        } else if (weatherEnum == WeatherType::partial_sun) {
+            DrawTexture(weatherIconCloud1, 1, 11, (Color){255,255,255,255});
+        } else if (weatherEnum == WeatherType::cloudy) {
+            DrawTexture(weatherIconCloud2, 1, 11, (Color){255,255,255,255});
+        } else if (weatherEnum == WeatherType::cloudy_rain) {
+            DrawTexture(weatherIconCloud3, 1, 11, (Color){255,255,255,255});
+        } else if (weatherEnum == WeatherType::cloudy_snow) {
+            DrawTexture(weatherIconSnow, 1, 11, (Color){255,255,255,255});
+        } else if (weatherEnum == WeatherType::cloudy_thunder) {
+            DrawTexture(weatherIconCloud4, 1, 11, (Color){255,255,255,255});
+        } else if (weatherEnum == WeatherType::cloudy_moon) {
+            DrawTexture(weatherIconMoonCloud1, 1, 11, (Color){255,255,255,255});
+        } else if (weatherEnum == WeatherType::full_moon) {
+            DrawTexture(weatherIconMoon, 1, 11, (Color){255,255,255,255});
+        } else {
+            DrawTexture(weatherIconCloud2, 1, 11, (Color){255,255,255,255});
+        }
+
         
         drawOutlinedText(timeBuffer2, 64 - MeasureText(timeBuffer, 5) - 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
         
@@ -267,7 +374,7 @@ int main(int argc, char** argv) {
         for (int i = 0; i < 24; i++) {
             int temp_xx = 19 + (i*2);
             int temp = temperatures[i];
-            int temp_yy = 31 - (map(temp, minTemperature, maxTemperature, 1, 10));
+            int temp_yy = 31 - (map(temp, minTemperature, maxTemperature, 1, tempDisplayHeight));
 
             Color tempColor = (Color){255,255,255,255};
             if (temp < 0) {
@@ -302,13 +409,15 @@ int main(int argc, char** argv) {
         // DrawLine(0,0,0,32, (Color){0,0,0,255});
 
         // draw icon on current temp
-        int timeOfDay_yy = 31 - (map(temperatures[0], minTemperature, maxTemperature, 1, 10));
+        int timeOfDay_yy = 31 - (map(temperatures[0], minTemperature, maxTemperature, 1, tempDisplayHeight));
         DrawLine(19, 0, 19,  32, Fade(currentTempColor, 0.25f));
 
         for (int i = 10; i >= 0.5; i = i * 0.8) {
             // DrawLine(19, timeOfDay_yy - i, 19,  timeOfDay_yy + i + 1, Fade(currentTempColor, 0.4f));
             DrawLine(19, timeOfDay_yy - i, 19,  timeOfDay_yy + i + 1, Fade(currentTempColor, (10 - i) / 10.0f));
             DrawLine(19 - (i/2), timeOfDay_yy, 19 + (i/2) + 1,  timeOfDay_yy, Fade(currentTempColor, (10 - i) / 10.0f));
+            // DrawLine(19 - (i/2) -1, timeOfDay_yy- (i/2), 19 + (i/2) + 1,  timeOfDay_yy+ (i/2), Fade(currentTempColor, (10 - i) / 10.0f));
+            // DrawLine(19 - (i/2) -1, timeOfDay_yy+ (i/2), 19 + (i/2) + 1,  timeOfDay_yy- (i/2), Fade(currentTempColor, (10 - i) / 10.0f));
 
         }
 
