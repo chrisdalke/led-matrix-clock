@@ -303,7 +303,8 @@ int main(int argc, char** argv) {
         float minPercent = (secondInDay % 60) / 60.0f;
         float startAngle = 245.0f - (minPercent * 360.0f);
         float endAngle = 245.0f;
-        DrawCircleSector((Vector2){32, 16}, 48.0f, startAngle, endAngle, 256, (Color){255,255,255,64});
+        DrawCircleSector((Vector2){32, 16}, 48.0f, startAngle, endAngle, 256, (Color){255,255,255,32});
+        DrawCircleSector((Vector2){32, 16}, 48.0f, startAngle, startAngle + 10.0f, 256, (Color){255,255,255,255});
         DrawRectangle(1,1,62, 30, BLACK);
         EndTextureMode();
 
