@@ -2,4 +2,4 @@
 
 mkdir build
 cd build
-cmake ..
+cmake .. -DBUILD_SHARED_LIBS=FALSE
