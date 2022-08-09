@@ -56,3 +56,7 @@ void MatrixDriver::flipBuffer() {
     canvas = matrix->SwapOnVSync(canvas);
     canvas->Fill(0,0,0);
 }
+
+bool MatrixDriver::isShim() {
+    return false;
+}

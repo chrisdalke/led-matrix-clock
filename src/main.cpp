@@ -49,15 +49,20 @@ typedef enum WeatherType
 int main(int argc, char** argv) {
     InitWindow(screenWidth, screenHeight, "LED Matrix Clock");
     RenderTexture2D target = LoadRenderTexture(texWidth, texHeight);
+    MatrixDriver matrixDriver(&argc, &argv, texWidth, texHeight);
 
-    SetTargetFPS(5);
+    if (matrixDriver.isShim()) {
+        SetTargetFPS(30);
+    } else {
+        SetTargetFPS(1);
+    }
+
 
     int x = 0;
     int y = 0;
     int velX = 1;
     int velY = 1;
 
-    MatrixDriver matrixDriver(&argc, &argv, texWidth, texHeight);
     
     char timeBuffer[256];
     char timeBuffer2[256];
