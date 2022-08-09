@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     InitWindow(screenWidth, screenHeight, "LED Matrix Clock");
     RenderTexture2D target = LoadRenderTexture(texWidth, texHeight);
 
-    SetTargetFPS(0);
+    SetTargetFPS(5);
 
     int x = 0;
     int y = 0;
@@ -62,6 +62,16 @@ int main(int argc, char** argv) {
     char timeBuffer[256];
     char timeBuffer2[256];
     char dateBuffer[256];
+
+    int temperatures[24];
+    int minTemperature = 60;
+    int maxTemperature = 80;
+
+    uint64_t lastWeatherQuery = 0;
+    std::string rawWeatherData;
+
+    bool dimMode = false;
+    
 
     // Texture2D dayBg = LoadTextureFromImage(GenImageGradientV(texWidth, texHeight, (Color){0, 0, 0,255}, (Color){43, 169, 252,255}));
     // Texture2D parallaxBgImg = LoadTexture("resources/bg.png");
@@ -95,6 +105,18 @@ int main(int argc, char** argv) {
      */
 
     while (!WindowShouldClose()) {
+        // Query weather data if it is expired
+        if (timeSinceEpochMillisec() - lastWeatherQuery > 30000) {
+            std::cout << "Querying weather API..." << std::endl;
+            lastWeatherQuery = timeSinceEpochMillisec();
+        }
+
+        // Debug: toggle brightness
+        // On real device this is done with the hardware button
+        if (IsKeyPressed(32)) {
+            dimMode = !dimMode;
+        }
+
         std::time_t now = std::time(nullptr);
         std::strftime(timeBuffer, 256, "%I:%M%p", std::localtime(&now));
         std::strftime(timeBuffer2, 256, "%I:%M", std::localtime(&now));
@@ -129,15 +151,27 @@ int main(int argc, char** argv) {
         DrawRectangle(0, 0, 64, 32, (Color){0,0,0,128});
 
         // Draw weather icon
-        DrawTexture(weatherIconCloud2, 46, 11, (Color){255,255,255,255});
+        DrawTexture(weatherIconCloud1, 46, 11, (Color){255,255,255,255});
         
         drawOutlinedText(timeBuffer2, 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
         drawOutlinedText(fmt::format("{}", currentTemperature).c_str(), texWidth - 17, 22, 2, (Color){0,0,0,255}, (Color){255,255,255,255});
 
+        // Draw temperature line for the current day
+        for (int i = 0; i < 24; i++) {
+
+        }
+
+
+
         EndTextureMode();
 
         // Draw a debug UI on the software window
-        DrawTexturePro(target.texture, (Rectangle){ 0, 0, texWidth, -texHeight }, (Rectangle){ 0, 0, screenWidth, screenHeight }, (Vector2){0,0}, 0.0f, WHITE); 
+        ClearBackground((Color){0, 0, 0, 255});
+        if (dimMode) {
+            DrawTexturePro(target.texture, (Rectangle){ 0, 0, texWidth, -texHeight }, (Rectangle){ 0, 0, screenWidth, screenHeight }, (Vector2){0,0}, 0.0f, (Color){255,255,255,100}); 
+        } else {
+            DrawTexturePro(target.texture, (Rectangle){ 0, 0, texWidth, -texHeight }, (Rectangle){ 0, 0, screenWidth, screenHeight }, (Vector2){0,0}, 0.0f, WHITE); 
+        }
 
         EndDrawing();
 
@@ -151,6 +185,7 @@ int main(int argc, char** argv) {
             }
         }
         matrixDriver.flipBuffer();
+        UnloadImage(canvasImage);
     }
 
     CloseWindow();
