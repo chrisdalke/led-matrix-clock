@@ -1,38 +1,18 @@
-# led-matrix-clock
-An RGB LED Matrix clock. Tells the time and weather information.
+# LED Matrix Clock
+An clock which displays on a 64x32 LED display. Shows the current time, date, weather, and next 24 hours of temperature.
 
-# Design notes
+I built the graphics using Raylib (https://www.raylib.com/), and weather information is queried from the weather.gov/NOAA weather API.
 
-Top left: Time, date
-Top right: Current temperature
-current weather
+YouTube video with a walkaround of the project: https://www.youtube.com/watch?v=OrP6YSjuHTE.
 
-bottom right:
-graph of temperature for whole day
-low/high temperature
+## (Incomplete) parts list
+- Raspberry Pi 3B: https://www.raspberrypi.com/products/raspberry-pi-3-model-b/
+- Adafruit RGB Matrix HAT: https://www.adafruit.com/product/2345
+- Adafruit 64x32 RGB LED Matrix: https://www.adafruit.com/product/2279
 
-bottom left: sunset, sunrise time
+## Software dependencies
+- raylib: https://www.raylib.com/
+- rpi-rgb-led-matrix: https://github.com/hzeller/rpi-rgb-led-matrix
+- wiringpi: http://wiringpi.com/
 
-gradient bg: current weather animation
-
-- clouds
-- night
-
-
-# Dependencies
--raylib
-
-```
-sudo apt install libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
-
-```
-
-```
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-```
-
--rpi-rgb-led-matrix
-https://github.com/hzeller/rpi-rgb-led-matrix
-
--sunset
-https://github.com/buelowp/sunset
+![LED Matrix Clock](resources/screenshots/screenshot1.png)
