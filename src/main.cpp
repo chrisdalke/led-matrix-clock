@@ -477,9 +477,9 @@ int main(int argc, char** argv) {
         DrawRectangle(3 + temperatureLength, 23, 3,3, (Color){128,128,128,255});
         DrawRectangle(4 + temperatureLength, 24, 1,1, (Color){0,0,0,255});
 
-        BeginBlendMode(BLEND_ADDITIVE);
-        DrawTexturePro(targetSecondHandOverlay.texture, (Rectangle){ 0, 0, 64, -32 }, (Rectangle){ 0, 0, 64, 32 }, (Vector2){0,0}, 0.0f, WHITE);           
-        EndBlendMode();
+        // BeginBlendMode(BLEND_ADDITIVE);
+        // DrawTexturePro(targetSecondHandOverlay.texture, (Rectangle){ 0, 0, 64, -32 }, (Rectangle){ 0, 0, 64, 32 }, (Vector2){0,0}, 0.0f, WHITE);           
+        // EndBlendMode();
 
         drawOutlinedText(dateBuffer, 64 - MeasureText(dateBuffer, 5) - 2, 11, 2, (Color){0,0,0,255}, (Color){128,128,128,255});
 
