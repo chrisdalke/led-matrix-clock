@@ -357,7 +357,7 @@ int main(int argc, char** argv) {
             currentTempColor = lookupColors[temperatures[0]];
         }
 
-        for (int x = -1; x < 18; x++) {
+        for (int x = -1; x < 19; x++) {
             for (int y = -1; y < 32; y++) {
                 if ((x+y) % 2) {
                     DrawPixel(x, y, Fade(currentTempColor, 0.3f));
