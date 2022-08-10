@@ -402,7 +402,7 @@ int main(int argc, char** argv) {
         drawOutlinedText(timeBuffer2, 64 - MeasureText(timeBuffer, 5) - 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
         
         if (secondInDay % 2 == 0) {
-            DrawRectangle(64 - MeasureText(timeBuffer3, 5) - 4, 0, 1, 12, (Color){0,0,0,128});
+            DrawRectangle(64 - MeasureText(timeBuffer3, 5) - 4, 0, 1, 12, (Color){0,0,0,255});
         }
 
         // find max and min temperatures
