@@ -263,6 +263,10 @@ int main(int argc, char** argv) {
                         weatherEnum = WeatherType::cloudy_thunder;
                         std::cout << "matched thunder" << std::endl;
                     }
+                    if (shortForecast.find("slight chance") != std::string::npos) {
+                        weatherEnum = WeatherType::partial_sun;
+                        std::cout << "matched slight chance" << std::endl;
+                    }
 
                     if (!isDaytime && weatherEnum == WeatherType::full_sun) {
                         weatherEnum = WeatherType::full_moon;
