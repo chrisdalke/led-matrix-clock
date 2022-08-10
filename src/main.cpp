@@ -97,6 +97,7 @@ int main(int argc, char** argv) {
     
     char timeBuffer[256];
     char timeBuffer2[256];
+    char timeBuffer3[256];
     char dateBuffer[256];
 
     int temperatures[24];
@@ -301,13 +302,9 @@ int main(int argc, char** argv) {
         }
 
         std::time_t now = std::time(nullptr);
-        if (secondInDay % 2 == 0) {
-            std::strftime(timeBuffer, 256, "%I:%M%p", std::localtime(&now));
-            std::strftime(timeBuffer2, 256, "%I:%M", std::localtime(&now));
-        } else {
-            std::strftime(timeBuffer, 256, "%I %M%p", std::localtime(&now));
-            std::strftime(timeBuffer2, 256, "%I %M", std::localtime(&now));
-        }
+        std::strftime(timeBuffer, 256, "%I:%M%p", std::localtime(&now));
+        std::strftime(timeBuffer2, 256, "%I:%M", std::localtime(&now));
+        std::strftime(timeBuffer3, 256, "%M%p", std::localtime(&now));
         std::strftime(dateBuffer, 256, "%b %e", std::localtime(&now));
         // Handle updating clock state!
 
@@ -404,6 +401,10 @@ int main(int argc, char** argv) {
         
         drawOutlinedText(timeBuffer2, 64 - MeasureText(timeBuffer, 5) - 2, 1, 5, (Color){0,0,0,255}, (Color){255,255,255,255});
         
+        if (secondInDay % 2 == 0) {
+            DrawRectangle(64 - MeasureText(timeBuffer3, 5) - 4, 0, 1, 12, (Color){0,0,0,128});
+        }
+
         // find max and min temperatures
         minTemperature = 999;
         maxTemperature = -999;
