@@ -3,6 +3,8 @@ An clock which displays on a 64x32 LED display. Shows the current time, date, we
 
 I built the graphics using Raylib (https://www.raylib.com/), and weather information is queried from the weather.gov/NOAA weather API.
 
+This repository contains a C++ project which uses Raylib to render the graphics for the display. When running on a RPi with an RGB Matrix HAT, the graphics are copied to the LED matrix each frame.
+
 YouTube video with a walkaround of the project: https://www.youtube.com/watch?v=OrP6YSjuHTE.
 
 ## (Incomplete) parts list
