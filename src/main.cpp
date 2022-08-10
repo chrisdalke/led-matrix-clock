@@ -301,8 +301,13 @@ int main(int argc, char** argv) {
         }
 
         std::time_t now = std::time(nullptr);
-        std::strftime(timeBuffer, 256, "%I:%M%p", std::localtime(&now));
-        std::strftime(timeBuffer2, 256, "%I:%M", std::localtime(&now));
+        if (secondInDay % 2 == 0) {
+            std::strftime(timeBuffer, 256, "%I:%M%p", std::localtime(&now));
+            std::strftime(timeBuffer2, 256, "%I:%M", std::localtime(&now));
+        } else {
+            std::strftime(timeBuffer, 256, "%I %M%p", std::localtime(&now));
+            std::strftime(timeBuffer2, 256, "%I %M", std::localtime(&now));
+        }
         std::strftime(dateBuffer, 256, "%b %e", std::localtime(&now));
         // Handle updating clock state!
 
