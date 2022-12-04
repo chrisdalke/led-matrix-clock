@@ -67,13 +67,13 @@ void drawOutlinedText(const char* text, int x, int y, int size, Color bg, Color 
 typedef enum WeatherType
 {
     full_sun = 1,
+    full_moon = 8,
     partial_sun = 2,
+    partial_moon = 7,
     cloudy = 3,
     cloudy_rain = 4,
     cloudy_snow = 5,
-    cloudy_thunder = 6,
-    cloudy_moon = 7,
-    full_moon = 8
+    cloudy_thunder = 6
 } WeatherType;
 
 int main(int argc, char** argv) {
@@ -114,8 +114,6 @@ int main(int argc, char** argv) {
 
     bool dimMode = false;
     bool dimModeLatch = false;
-
-    std::string shortForecast;
 
     std::regex rainRegex("rain");
     std::regex snowRegex("snow");
@@ -174,115 +172,138 @@ int main(int argc, char** argv) {
             std::cout << "Querying weather API..." << std::endl;
             lastWeatherQuery = timeSinceEpochMillisec();
 
-            // Grab next 24 hours of temperature + weather
-            cpr::Response r = cpr::Get(cpr::Url{"https://api.weather.gov/gridpoints/BOX/70,79/forecast/hourly"});
+            // Grab forecast from API call
+            cpr::Response r = cpr::Get(
+                cpr::Url{"https://api.open-meteo.com/v1/forecast?latitude=42.39&longitude=-71.10&hourly=temperature_2m,weathercode&timezone=America/New_York&current_weather=true&temperature_unit=fahrenheit&timeformat=unixtime&daily=sunrise,sunset"});
+
+
+
+
             if (r.status_code == 200) {
                 try {
                     json rawPayload = json::parse(r.text);
-                    std::cout << jsonWeatherData.dump(4) << std::endl;
+                    //std::cout << rawPayload.dump(4) << std::endl;
 
-                    json periods = rawPayload["properties"]["periods"];
+                    auto& currentWeather = rawPayload["current_weather"];
 
-                    bool isDaytime = true;
-                    for (auto& period : periods) {
-                        int hourAfterNow = period["number"];
-                        int temperature = period["temperature"];
-                        shortForecast = period["shortForecast"];
+                    std::vector<double> temperatureData = rawPayload["hourly"]["temperature_2m"];
+                    std::vector<uint64_t> timestamps = rawPayload["hourly"]["time"];
 
-                        if (hourAfterNow <= 24) {
-                            temperatures[hourAfterNow - 1] = temperature;
+                    // Find the next 24 temperature and forecast values
+                    int i = 0;
+                    for (auto& ts: timestamps) {
+                        if (ts >= (lastWeatherQuery / 1000)) {
+                            int hourRelative = (int)((ts - (lastWeatherQuery / 1000)) / 3600.0);
+                            double temperature = temperatureData[i];
+                            if (hourRelative < 24) {
+                                std::cout << "Hour: " << hourRelative << "Temp: " << temperature << std::endl;
+                                temperatures[hourRelative] = temperature;
+                            }
                         }
+                        i += 1;
+                    }
 
-                        if (hourAfterNow <= 1) {
-                            isDaytime = period["isDaytime"];
+                    temperatures[0] = currentWeather["temperature"];
+                    int currentWeatherCode = currentWeather["weathercode"];
+                    int currentSunrise = rawPayload["daily"]["sunrise"][0];
+                    int currentSunset = rawPayload["daily"]["sunset"][0];
+
+                    std::cout << "Sunrise today: " << currentSunrise << std::endl;
+                    std::cout << "Sunset today: " << currentSunset << std::endl;
+
+                    bool isDaytime = false;
+                    if (lastWeatherQuery > (currentSunrise * 1000)) {
+                        // After sunrise
+                        isDaytime = true;
+                    }
+                    if (lastWeatherQuery > (currentSunset * 1000)) {
+                        // After sunset
+                        isDaytime = false;
+                    }
+
+                    std::cout << "Is daytime: " << isDaytime << std::endl;
+                    std::cout << "Current weather code: " << currentWeatherCode << std::endl;
+                    std::cout << "Current temperature: " << temperatures[0] << std::endl;
+
+                    // Weather codes at bottom of https://open-meteo.com/en/docs
+                    /*
+                    typedef enum WeatherType
+                    {
+                        full_sun = 1,
+                        full_moon = 8,
+                        partial_sun = 2,
+                        partial_moon = 7,
+                        cloudy = 3,
+                        cloudy_rain = 4,
+                        cloudy_snow = 5,
+                        cloudy_thunder = 6
+                    } WeatherType;
+                    */
+                    if (currentWeatherCode == 0 || currentWeatherCode == 1) {
+                        // Clear sky, mainly clear
+                        if (isDaytime) {
+                            weatherEnum = WeatherType::full_sun;
+                        } else {
+                            weatherEnum = WeatherType::full_moon;
                         }
-                    }
-
-                    std::cout << "FORECAST TEMPS:" << std::endl;
-                    for (int i = 0; i < 24; i++) {
-                        std::cout << fmt::format("hour {}: {}deg F", i + 1, temperatures[i]) << std::endl;
-                    }
-                    boost::to_lower(shortForecast);
-
-                    std::cout << "CURRENT WEATHER" << std::endl;
-                    std::cout << shortForecast << std::endl;
-
-
-                    // parse weather string into an icon
-                    // typedef enum WeatherType
-                    // {
-                    //     full_sun = 1,
-                    //     partial_sun = 2,
-                    //     cloudy = 3,
-                    //     cloudy_rain = 4,
-                    //     cloudy_snow = 5,
-                    //     cloudy_thunder = 6,
-                    //     cloudy_moon = 7,
-                    //     full_moon = 8
-                    // } WeatherType;
-
-                    // std::regex rainRegex("rain");
-                    // std::regex snowRegex("snow");
-                    // std::regex chanceOfRegex("chance");
-                    // std::regex thunderRegex("thunder");
-                    // std::regex cloudyRegex("cloudy");
-                    // std::regex clearRegex("clear");
-
-                    if (shortForecast.find("sunny") != std::string::npos) {
-                        weatherEnum = WeatherType::full_sun;
-                        std::cout << "matched full sun" << std::endl;
-                    }
-                    if (shortForecast.find("cloud") != std::string::npos) {
+                    } else if (currentWeatherCode == 2) {
+                        // Partly cloudy
+                        if (isDaytime) {
+                            weatherEnum = WeatherType::partial_sun;
+                        } else {
+                            weatherEnum = WeatherType::partial_moon;
+                        }
+                    } else if (
+                        currentWeatherCode == 3 || 
+                        currentWeatherCode == 45 || 
+                        currentWeatherCode == 48) {
+                        // Overcast, fog
                         weatherEnum = WeatherType::cloudy;
-                        std::cout << "matched cloudy" << std::endl;
-                    }
-                    if (shortForecast.find("partly") != std::string::npos) {
-                        weatherEnum = WeatherType::partial_sun;
-                        std::cout << "matched partial sun" << std::endl;
-                    }
-                    if (shortForecast.find("clear") != std::string::npos) {
-                        weatherEnum = WeatherType::full_sun;
-                        std::cout << "matched clear" << std::endl;
-                    }
-                    if (shortForecast.find("fog") != std::string::npos) {
-                        weatherEnum = WeatherType::cloudy;
-                        std::cout << "matched foggy" << std::endl;
-                    }
-                    if (shortForecast.find("haze") != std::string::npos) {
-                        weatherEnum = WeatherType::cloudy;
-                        std::cout << "matched haze" << std::endl;
-                    }
-                    if (shortForecast.find("rain") != std::string::npos) {
+                    } else if (
+                        currentWeatherCode == 51 || 
+                        currentWeatherCode == 53 || 
+                        currentWeatherCode == 55 || 
+                        currentWeatherCode == 56 ||
+                        currentWeatherCode == 57 ||
+                        currentWeatherCode == 61 || 
+                        currentWeatherCode == 63 ||
+                        currentWeatherCode == 65 ||
+                        currentWeatherCode == 66 ||
+                        currentWeatherCode == 67 || 
+                        currentWeatherCode == 80 ||
+                        currentWeatherCode == 81 ||
+                        currentWeatherCode == 82) {
+                        // raining
                         weatherEnum = WeatherType::cloudy_rain;
-                        std::cout << "matched rainy" << std::endl;
-                    }
-                    if (shortForecast.find("snow") != std::string::npos) {
+                    } else if (
+                        currentWeatherCode == 71 ||
+                        currentWeatherCode == 73 ||
+                        currentWeatherCode == 75 ||
+                        currentWeatherCode == 77 ||
+                        currentWeatherCode == 85 ||
+                        currentWeatherCode == 86) {
+                        // snowing
                         weatherEnum = WeatherType::cloudy_snow;
-                        std::cout << "matched snow" << std::endl;
-                    }
-                    if (shortForecast.find("thunder") != std::string::npos) {
+                    } else if (
+                        currentWeatherCode == 95 ||
+                        currentWeatherCode == 96 ||
+                        currentWeatherCode == 99) {
+                        // thundering
                         weatherEnum = WeatherType::cloudy_thunder;
-                        std::cout << "matched thunder" << std::endl;
+                    } else {
+                        // Default: partial sun or moon
+                        if (isDaytime) {
+                            weatherEnum = WeatherType::partial_sun;
+                        } else {
+                            weatherEnum = WeatherType::partial_moon;
+                        }
                     }
-                    if (shortForecast.find("slight chance") != std::string::npos) {
-                        weatherEnum = WeatherType::partial_sun;
-                        std::cout << "matched slight chance" << std::endl;
-                    }
-
-                    if (!isDaytime && weatherEnum == WeatherType::full_sun) {
-                        weatherEnum = WeatherType::full_moon;
-                    }
-
-                    if (!isDaytime && weatherEnum == WeatherType::partial_sun) {
-                        weatherEnum = WeatherType::cloudy_moon;
-                    }
-
 
                 } catch (std::exception &e) {
-                    std::cout << "Failed to parse weather API!" << std::endl;
+                    std::cout << "Failed to parse weather API!" << e.what() << std::endl;
                 }
             } else {
-                std::cout << "Failed to query weather API!" << std::endl;
+                std::cout << "Failed to query weather API! Status code: " << r.status_code << "msg: " << r.text << std::endl;
             }
         }
         secondInDay = seconds_since_local_midnight();
@@ -290,14 +311,14 @@ int main(int argc, char** argv) {
         // Debug: toggle brightness
         // On real device this is done with the hardware button
         if (IsKeyDown(32) || matrixDriver.hardwareSwitchPressed()) {
-            std::cout << "Button down" << std::endl;
+            //std::cout << "Button down" << std::endl;
             if (!dimModeLatch) {
                 dimMode = !dimMode;
                 dimModeLatch = true;
                 std::cout << "Toggled dim mode to " << dimMode << std::endl;
             }
         } else {
-            std::cout << "Button up" << std::endl;
+            //std::cout << "Button up" << std::endl;
             dimModeLatch = false;
         }
 
@@ -390,7 +411,7 @@ int main(int argc, char** argv) {
             DrawTexture(weatherIconSnow, 1, 11, (Color){255,255,255,255});
         } else if (weatherEnum == WeatherType::cloudy_thunder) {
             DrawTexture(weatherIconCloud4, 1, 11, (Color){255,255,255,255});
-        } else if (weatherEnum == WeatherType::cloudy_moon) {
+        } else if (weatherEnum == WeatherType::partial_moon) {
             DrawTexture(weatherIconMoonCloud1, 1, 11, (Color){255,255,255,255});
         } else if (weatherEnum == WeatherType::full_moon) {
             DrawTexture(weatherIconMoon, 1, 11, (Color){255,255,255,255});
@@ -415,6 +436,12 @@ int main(int argc, char** argv) {
             if (temperatures[i] > maxTemperature) {
                 maxTemperature = temperatures[i];
             }
+        }
+        int tempRange = (maxTemperature - minTemperature);
+        if (tempRange < 10) {
+            int centerTemp = (maxTemperature + minTemperature) / 2;
+            minTemperature = centerTemp - 5;
+            maxTemperature = centerTemp + 5;
         }
 
         // DrawRectangle(0, 0, 1, 1, (Color){0,0,255,255});
