@@ -205,18 +205,22 @@ int main(int argc, char** argv) {
 
                     temperatures[0] = currentWeather["temperature"];
                     int currentWeatherCode = currentWeather["weathercode"];
-                    int currentSunrise = rawPayload["daily"]["sunrise"][0];
-                    int currentSunset = rawPayload["daily"]["sunset"][0];
+                    uint64_t currentSunrise = rawPayload["daily"]["sunrise"][0];
+                    uint64_t currentSunset = rawPayload["daily"]["sunset"][0];
+
+                    currentSunrise *= 1000;
+                    currentSunset *= 1000;
 
                     std::cout << "Sunrise today: " << currentSunrise << std::endl;
                     std::cout << "Sunset today: " << currentSunset << std::endl;
+                    std::cout << "Current time: " << lastWeatherQuery << std::endl;
 
                     bool isDaytime = false;
-                    if (lastWeatherQuery > (currentSunrise * 1000)) {
+                    if (lastWeatherQuery > (currentSunrise)) {
                         // After sunrise
                         isDaytime = true;
                     }
-                    if (lastWeatherQuery > (currentSunset * 1000)) {
+                    if (lastWeatherQuery > (currentSunset)) {
                         // After sunset
                         isDaytime = false;
                     }
